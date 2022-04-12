@@ -8,12 +8,22 @@ const CompressionPlugin = require('compression-webpack-plugin');
 const WebpackObfuscator = require('webpack-obfuscator');
 
 module.exports = {
+  //模式
+  mode: 'production',
+  target: 'web',
   //使用文件缓存，優化建構、打包速度
   cache: {
     type: 'filesystem', 
   },
-  //模式
-  mode: 'production',
+  //引入檔案上限調整、引入檔案較大時不顯示錯誤
+  performance: {
+    maxAssetSize: 1000000,
+    maxEntrypointSize: 1000000,
+    hints: false
+  },
+  optimization: {
+    runtimeChunk: 'single'
+  },
   //入口
   entry: {
     main: path.resolve(__dirname, './src/index.js'),
@@ -33,7 +43,7 @@ module.exports = {
     //自動開啟瀏覽器
     open: true,
     //live serve
-    hot: true,
+    hot: false
   },
   //插件
   plugins: [
@@ -46,10 +56,10 @@ module.exports = {
         collapseWhitespace: true, //去空格
         removeComments: true, //去註解
       },
+      favicon: path.resolve(__dirname, './src/bitbug_favicon.ico'),
       //指定引入哪個入口(js)
       chunks: ['main', 'test'],
     }),
-
     //每次打包清理舊的
     new CleanWebpackPlugin(),
 
@@ -66,8 +76,9 @@ module.exports = {
 
     //JS代碼混淆
     new WebpackObfuscator ({
+      stringArray: true,
       rotateStringArray: true
-    })
+    }, ['main.js'])
   ],
   module: {   
     rules: [
@@ -129,7 +140,7 @@ module.exports = {
                 rotateStringArray: true
             }
         }
-    }
+      }
     ],
   }
 }
